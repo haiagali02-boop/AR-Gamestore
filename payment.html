@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Gamestore | Payment Selection</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- PayPal SDK -->
+    <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
+</head>
+<body>
+    <nav>
+        <div class="logo">AR Gamestore</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="index.html#products">Store</a>
+            <a href="order.html">Order</a>
+        </div>
+    </nav>
+
+    <div class="order-container animate-fade">
+        <div id="payment-selection-container">
+            <h2>Select Payment Method</h2>
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span>Selected Product:</span>
+                    <span id="payment-summary-product">Loading...</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>Total Amount:</span>
+                    <span id="payment-summary-price">Loading...</span>
+                </div>
+            </div>
+
+            <div class="payment-methods" id="methods-list">
+                <!-- PayPal -->
+                <div class="payment-method-card" onclick="showMethodDetail('paypal')">
+                    <i class="fab fa-paypal"></i>
+                    <div class="method-info">
+                        <h4>PayPal</h4>
+                        <p>Pay securely with your PayPal account</p>
+                    </div>
+                </div>
+
+                <!-- BaridiMob -->
+                <div class="payment-method-card" onclick="showMethodDetail('baridimob')">
+                    <i class="fas fa-university"></i>
+                    <div class="method-info">
+                        <h4>BaridiMob</h4>
+                        <p>Transfer via CCP (Algeria Post)</p>
+                    </div>
+                </div>
+
+                <!-- RedotPay -->
+                <div class="payment-method-card" onclick="showMethodDetail('redotpay')">
+                    <i class="fas fa-credit-card"></i>
+                    <div class="method-info">
+                        <h4>RedotPay</h4>
+                        <p>Pay with RedotPay card or app</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail Views -->
+            <!-- PayPal Detail -->
+            <div id="paypal-detail" class="payment-detail-view">
+                <button class="back-to-methods" onclick="hideMethodDetail()"><i class="fas fa-arrow-left"></i> Back to methods</button>
+                <h3>Pay with PayPal</h3>
+                <div id="paypal-button-container"></div>
+            </div>
+
+            <!-- BaridiMob Detail -->
+            <div id="baridimob-detail" class="payment-detail-view">
+                <button class="back-to-methods" onclick="hideMethodDetail()"><i class="fas fa-arrow-left"></i> Back to methods</button>
+                <h3>BaridiMob Transfer</h3>
+                <div class="instruction-box">
+                    <p>Please send the total amount to the following CCP account:</p>
+                    <span class="placeholder-text">YOUR_CCP_NUMBER</span>
+                    <p style="margin-top: 1rem; font-size: 0.9rem;">Recipient: AR Gamestore</p>
+                </div>
+                <p>Upload a screenshot of your payment confirmation:</p>
+                <div class="upload-area" onclick="document.getElementById('receipt-upload').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Click to upload or drag & drop</p>
+                    <input type="file" id="receipt-upload" style="display: none;" accept="image/*">
+                </div>
+                <button class="submit-btn" onclick="confirmManualPayment('BaridiMob')">Confirm Payment</button>
+            </div>
+
+            <!-- RedotPay Detail -->
+            <div id="redotpay-detail" class="payment-detail-view">
+                <button class="back-to-methods" onclick="hideMethodDetail()"><i class="fas fa-arrow-left"></i> Back to methods</button>
+                <h3>RedotPay Payment</h3>
+                <div class="instruction-box">
+                    <p>Click the button below to be redirected to our RedotPay payment link.</p>
+                </div>
+                <a href="YOUR_REDOTPAY_LINK" target="_blank" class="redot-link-btn" onclick="confirmManualPayment('RedotPay')">
+                    <i class="fas fa-external-link-alt"></i> Go to RedotPay
+                </a>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div id="payment-success-overlay">
+            <i class="fas fa-check-circle"></i>
+            <h2>Thank You!</h2>
+            <p id="success-text">Your Game Pass code will be sent to your email shortly.</p>
+            <div class="summary-card" style="margin-top: 2rem;">
+                <p style="font-size: 0.9rem; color: var(--text-muted);">A confirmation has been sent to your email.</p>
+            </div>
+            <a href="index.html" class="buy-btn" style="margin-top: 2rem; display: inline-block; width: auto;">Back to Home</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <h3>Follow us on Instagram</h3>
+            <p>Stay updated with our latest offers and gaming news!</p>
+            <a href="https://instagram.com/ar_game.store" class="instagram-btn" target="_blank">
+                <i class="fab fa-instagram"></i> Follow ar_game.store
+            </a>
+            <p style="margin-top: 2rem; font-size: 0.9rem; color: #555;">&copy; 2024 AR Gamestore. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
