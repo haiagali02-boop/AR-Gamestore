@@ -29,20 +29,27 @@
         <form
           action="https://formsubmit.co/d4d77dbb32a266c7bef10c590cfb2911"
           method="POST"
+          id="order-form"
         >
           <!-- FormSubmit Configuration -->
           <input
             type="hidden"
             name="_next"
+            id="next-redirect"
             value="https://USERNAME.github.io/AR-Gamestore/success.html"
           />
           <input type="hidden" name="_captcha" value="false" />
           <input
             type="hidden"
             name="_subject"
+            id="email-subject"
             value="New Order: Xbox Game Pass Premium"
           />
           <input type="hidden" name="_template" value="table" />
+
+          <!-- Dynamic Product Info -->
+          <input type="hidden" name="Product Name" id="form-product-name" />
+          <input type="hidden" name="Product Price" id="form-product-price" />
 
           <div class="form-group">
             <label for="first_name">First Name</label>
