@@ -17,6 +17,160 @@ document.addEventListener("DOMContentLoaded", () => {
   animatedElements.forEach((element) => {
     observer.observe(element);
   });
+
+  const airtableToken =
+    "patL3nOQ8P2i68sXl.690d0f2c98704aeab30190c8ef4d82f17b68780eb1308332712a8fd6cac9e97b";
+  const baseId = "appREveHzZZJ8qhgi";
+  const tableName = "Products";
+
+  // Airtable Stock Check System
+  const checkStock = async () => {
+    const buyButtonContainer = document.getElementById("buy-button");
+    if (!buyButtonContainer) return;
+
+    const url = `https://api.airtable.com/v0/${baseId}/${tableName}?filterByFormula=AND(NOT({Sold}), NOT({Reserved}))`;
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${airtableToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch stock data from Airtable.");
+      }
+
+      const data = await response.json();
+      const availableRecords = data.records.length;
+
+      if (availableRecords === 0) {
+        buyButtonContainer.innerHTML =
+          '<h3 style="color:red; text-align:center; margin-top:20px;">❌ Out of Stock</h3>';
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("Airtable Error:", error);
+      return false;
+    }
+  };
+
+  // Initialize PayPal Button System
+  const initPayPal = () => {
+    if (!document.getElementById("paypal-button-container")) return;
+
+    paypal
+      .Buttons({
+        style: {
+          layout: "vertical",
+          color: "gold",
+          shape: "rect",
+          label: "paypal",
+        },
+        createOrder: function (data, actions) {
+          return actions.order.create({
+            purchase_units: [
+              {
+                amount: {
+                  value: "2.50",
+                },
+                description: "Xbox Game Pass Premium",
+              },
+            ],
+          });
+        },
+        onApprove: async function (data, actions) {
+          const details = await actions.order.capture();
+          const buyerEmail = details.payer.email_address;
+
+          // UI State: Show Loading
+          document.getElementById("buy-button").style.display = "none";
+          document.getElementById("payment-instruction").style.display = "none";
+          document.getElementById("loading-message").style.display = "block";
+
+          try {
+            // Step 1: Find an available record
+            const fetchUrl = `https://api.airtable.com/v0/${baseId}/${tableName}?filterByFormula=AND(NOT({Sold}), NOT({Reserved}))&maxRecords=1`;
+            const fetchRes = await fetch(fetchUrl, {
+              headers: { Authorization: `Bearer ${airtableToken}` },
+            });
+            const fetchData = await fetchRes.json();
+
+            if (fetchData.records.length === 0) {
+              alert("Sorry, we just ran out of stock! Please contact support.");
+              return;
+            }
+
+            const recordId = fetchData.records[0].id;
+
+            // Step 2: Reserve the record
+            await fetch(
+              `https://api.airtable.com/v0/${baseId}/${tableName}/${recordId}`,
+              {
+                method: "PATCH",
+                headers: {
+                  Authorization: `Bearer ${airtableToken}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  fields: { Reserved: true },
+                }),
+              }
+            );
+
+            // Step 4: Fetch the code from the reserved record
+            const codeRes = await fetch(
+              `https://api.airtable.com/v0/${baseId}/${tableName}/${recordId}`,
+              {
+                headers: { Authorization: `Bearer ${airtableToken}` },
+              }
+            );
+            const codeData = await codeRes.json();
+            const gamePassCode = codeData.fields["Game pass code"];
+
+            // Step 5: Display the code
+            document.getElementById("loading-message").style.display = "none";
+            document.getElementById("code-display").style.display = "block";
+            document.getElementById("game-pass-code").textContent =
+              gamePassCode;
+
+            // Step 6: Mark as Sold
+            await fetch(
+              `https://api.airtable.com/v0/${baseId}/${tableName}/${recordId}`,
+              {
+                method: "PATCH",
+                headers: {
+                  Authorization: `Bearer ${airtableToken}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  fields: {
+                    Sold: true,
+                    "Buyer Email": buyerEmail,
+                  },
+                }),
+              }
+            );
+          } catch (error) {
+            console.error("Secure Delivery Error:", error);
+            alert(
+              "There was an error delivering your code. Please check your email or contact support."
+            );
+          }
+        },
+      })
+      .render("#paypal-button-container");
+  };
+
+  // Run initial logic
+  if (window.location.pathname.includes("payment.html")) {
+    checkStock().then((hasStock) => {
+      if (hasStock) {
+        initPayPal();
+      }
+    });
+  }
 });
 
 // Add simple hover effect feedback for all buttons
