@@ -23,22 +23,37 @@
     <div class="paypal-payment-container animate-fade">
       <div class="paypal-card">
         <h2>Secure Payment with PayPal</h2>
-        <p>
+        <p id="payment-instruction">
           Click the button below to complete your purchase for the Xbox Game
           Pass Premium code.
         </p>
 
-        <!-- PayPal Hosted Button Wrapper -->
+        <!-- Loading Message -->
+        <div id="loading-message" style="display: none">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Preparing your Game Pass code...</p>
+        </div>
+
+        <!-- Code Display -->
+        <div id="code-display" style="display: none">
+          <h3>Your Xbox Game Pass Code:</h3>
+          <div id="game-pass-code"></div>
+          <p
+            style="
+              margin-top: 15px;
+              font-size: 0.9rem;
+              color: var(--text-muted);
+            "
+          >
+            Thank you! Your Xbox Game Pass Premium code will be sent to your
+            email shortly.
+          </p>
+        </div>
+
+        <!-- PayPal Button Wrapper -->
         <div id="buy-button">
-          <script src="https://www.paypal.com/sdk/js?client-id=BAAevmO7nXTRR6SUC-3YTlJZtkd6f0fJLVF3zvbDaQxPgEhIvEJ4ZmNZFwJ6zvUhmgKOuLVuHzTBQEUYKY&components=hosted-buttons&disable-funding=venmo&currency=USD"></script>
-          <div id="paypal-container-3BZQCHPZTRVJJ"></div>
-          <script>
-            paypal
-              .HostedButtons({
-                hostedButtonId: "3BZQCHPZTRVJJ",
-              })
-              .render("#paypal-container-3BZQCHPZTRVJJ");
-          </script>
+          <script src="https://www.paypal.com/sdk/js?client-id=AXLEMmlolbR1m43N74n8T3_-Ut5mFW9ooDTcNbMdHAh-0z8lsICfKs7b0bNEqwlq5X6et3aBmXRy5uyu&currency=USD"></script>
+          <div id="paypal-button-container"></div>
         </div>
       </div>
     </div>
@@ -63,5 +78,3 @@
     <script src="script.js"></script>
   </body>
 </html>
-
-   
