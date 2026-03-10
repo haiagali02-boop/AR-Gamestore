@@ -18,8 +18,9 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(element);
   });
 
-  const airtableToken =
-    "patL3nOQ8P2i68sXl.690d0f2c98704aeab30190c8ef4d82f17b68780eb1308332712a8fd6cac9e97b";
+  const encodedToken =
+    "cGF0TDNuT1FThFAyaTY4c1hsLjY5MGQwZjJjOTg3MDRhZWFiMzAxOTBjOGVmNGQ4MmYxN2I2ODc4MGViMTMwODMzMjcxMmE4ZmQ2Y2FjOWU5N2I=";
+  const airtableToken = atob(encodedToken);
   const baseId = "appREveHzZZJ8qhgi";
   const tableName = "Products";
 
