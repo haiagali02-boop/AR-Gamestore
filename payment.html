@@ -28,16 +28,18 @@
           Pass Premium code.
         </p>
 
-        <!-- PayPal Hosted Button -->
-        <script src="https://www.paypal.com/sdk/js?client-id=BAAevmO7nXTRR6SUC-3YTlJZtkd6f0fJLVF3zvbDaQxPgEhIvEJ4ZmNZFwJ6zvUhmgKOuLVuHzTBQEUYKY&components=hosted-buttons&disable-funding=venmo&currency=USD"></script>
-        <div id="paypal-container-3BZQCHPZTRVJJ"></div>
-        <script>
-          paypal
-            .HostedButtons({
-              hostedButtonId: "3BZQCHPZTRVJJ",
-            })
-            .render("#paypal-container-3BZQCHPZTRVJJ");
-        </script>
+        <!-- PayPal Hosted Button Wrapper -->
+        <div id="buy-button">
+          <script src="https://www.paypal.com/sdk/js?client-id=BAAevmO7nXTRR6SUC-3YTlJZtkd6f0fJLVF3zvbDaQxPgEhIvEJ4ZmNZFwJ6zvUhmgKOuLVuHzTBQEUYKY&components=hosted-buttons&disable-funding=venmo&currency=USD"></script>
+          <div id="paypal-container-3BZQCHPZTRVJJ"></div>
+          <script>
+            paypal
+              .HostedButtons({
+                hostedButtonId: "3BZQCHPZTRVJJ",
+              })
+              .render("#paypal-container-3BZQCHPZTRVJJ");
+          </script>
+        </div>
       </div>
     </div>
 
@@ -61,3 +63,5 @@
     <script src="script.js"></script>
   </body>
 </html>
+
+   
