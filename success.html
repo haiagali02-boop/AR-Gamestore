@@ -1,1 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmed | AR Gamestore</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      .success-container {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 20px;
+      }
+      .success-card {
+        background: var(--bg-card);
+        padding: 60px 40px;
+        border-radius: 24px;
+        border: 1px solid #333;
+        max-width: 600px;
+        width: 100%;
+        box-shadow: var(--shadow-green);
+      }
+      .success-icon {
+        font-size: 5rem;
+        color: var(--primary-color);
+        margin-bottom: 30px;
+      }
+      .success-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 20px;
+      }
+      .success-text {
+        color: var(--text-muted);
+        font-size: 1.2rem;
+        margin-bottom: 40px;
+      }
+      .redirect-timer {
+        font-size: 0.9rem;
+        color: var(--text-accent);
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <a href="index.html" class="logo">
+          <i class="fab fa-xbox"></i>
+          <span>AR</span> GAMESTORE
+        </a>
+      </div>
+    </header>
 
+    <main>
+      <div class="container success-container">
+        <div class="success-card animate-fade">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h1 class="success-title">Order Received!</h1>
+          <p class="success-text">
+            Thank you! Your details have been securely recorded. You are now
+            being redirected to the payment page to complete your purchase.
+          </p>
+          <a href="payment.html" class="buy-btn">Go to Payment Now</a>
+          <p class="redirect-timer">
+            Redirecting in <span id="timer">5</span> seconds...
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p class="footer-text">
+          &copy; 2026 AR Gamestore. High-quality gaming codes.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      let timeLeft = 5;
+      const timerElement = document.getElementById("timer");
+
+      const countdown = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          window.location.href = "payment.html";
+        }
+      }, 1000);
+    </script>
+    <script src="script.js"></script>
+  </body>
+</html>
