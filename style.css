@@ -273,6 +273,32 @@ nav {
   margin-bottom: 1.5rem;
 }
 
+/* Success Page Styles */
+.success-card {
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid #333;
+}
+
+.success-icon {
+  font-size: 4rem;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+}
+
+.success-card h2 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.success-card p {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
 #paypal-container-3BZQCHPZTRVJJ {
   margin-top: 2rem;
 }

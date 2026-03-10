@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Gamestore | Payment Successful</title>
+    <title>AR Gamestore | Order Received</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -17,11 +17,13 @@
     </nav>
 
     <div class="order-container animate-fade">
-        <div id="payment-success-overlay" style="display: block; text-align: center; padding: 2rem;">
-            <i class="fas fa-check-circle"></i>
-            <h2>Payment Successful!</h2>
-            <p>Thank you for your purchase. Your Game Pass code will be sent to your email shortly.</p>
-            <a href="index.html" class="buy-btn" style="margin-top: 2rem; display: inline-block; width: auto;">Return to Store</a>
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Order received successfully!</h2>
+            <p>Thank you for your order. Please continue to payment to receive your Xbox Game Pass code.</p>
+            <a href="payment.html" class="submit-btn" style="margin-top: 2rem;">Go to Payment</a>
         </div>
     </div>
 
