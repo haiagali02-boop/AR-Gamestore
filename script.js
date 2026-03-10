@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const checkStock = async () => {
     const buyButtonContainer = document.getElementById("buy-button");
     const stockInfo = document.getElementById("stock-info");
-    if (!buyButtonContainer) return;
+    const homeStockCount = document.getElementById("home-stock-count");
 
     const url = `https://api.airtable.com/v0/${baseId}/${tableName}?filterByFormula=AND(NOT({Sold}), NOT({Reserved}))`;
 
@@ -52,7 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
           availableRecords > 0 ? "var(--primary-color)" : "red";
       }
 
-      if (availableRecords === 0) {
+      if (homeStockCount) {
+        homeStockCount.textContent =
+          availableRecords > 0
+            ? `🔥 ${availableRecords} codes currently in stock!`
+            : "❌ Out of Stock - Check back later";
+        homeStockCount.style.color =
+          availableRecords > 0 ? "var(--primary-color)" : "red";
+      }
+
+      if (buyButtonContainer && availableRecords === 0) {
         buyButtonContainer.innerHTML =
           '<h3 style="color:red; text-align:center; margin-top:20px;">❌ Out of Stock</h3>';
         if (stockInfo) stockInfo.textContent = "❌ Out of Stock";
@@ -62,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Airtable Error:", error);
       if (stockInfo) stockInfo.textContent = "Error checking stock";
+      if (homeStockCount) homeStockCount.textContent = "";
       return false;
     }
   };
@@ -175,9 +185,14 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Run initial logic
-  if (window.location.pathname.includes("payment.html")) {
+  if (
+    window.location.pathname.includes("payment.html") ||
+    window.location.pathname.endsWith("index.html") ||
+    window.location.pathname === "/" ||
+    window.location.pathname.endsWith("/")
+  ) {
     checkStock().then((hasStock) => {
-      if (hasStock) {
+      if (hasStock && window.location.pathname.includes("payment.html")) {
         initPayPal();
       }
     });
