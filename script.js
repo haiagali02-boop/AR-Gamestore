@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Airtable Stock Check System
   const checkStock = async () => {
     const buyButtonContainer = document.getElementById("buy-button");
+    const stockInfo = document.getElementById("stock-info");
     if (!buyButtonContainer) return;
 
     const url = `https://api.airtable.com/v0/${baseId}/${tableName}?filterByFormula=AND(NOT({Sold}), NOT({Reserved}))`;
@@ -45,14 +46,22 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json();
       const availableRecords = data.records.length;
 
+      if (stockInfo) {
+        stockInfo.textContent = `In Stock: ${availableRecords} codes available`;
+        stockInfo.style.color =
+          availableRecords > 0 ? "var(--primary-color)" : "red";
+      }
+
       if (availableRecords === 0) {
         buyButtonContainer.innerHTML =
           '<h3 style="color:red; text-align:center; margin-top:20px;">❌ Out of Stock</h3>';
+        if (stockInfo) stockInfo.textContent = "❌ Out of Stock";
         return false;
       }
       return true;
     } catch (error) {
       console.error("Airtable Error:", error);
+      if (stockInfo) stockInfo.textContent = "Error checking stock";
       return false;
     }
   };
@@ -88,10 +97,11 @@ document.addEventListener("DOMContentLoaded", () => {
           // UI State: Show Loading
           document.getElementById("buy-button").style.display = "none";
           document.getElementById("payment-instruction").style.display = "none";
+          document.getElementById("stock-info").style.display = "none";
           document.getElementById("loading-message").style.display = "block";
 
           try {
-            // Step 1: Find an available record
+            // Step 1: Find an available record (Sold=false AND Reserved=false)
             const fetchUrl = `https://api.airtable.com/v0/${baseId}/${tableName}?filterByFormula=AND(NOT({Sold}), NOT({Reserved}))&maxRecords=1`;
             const fetchRes = await fetch(fetchUrl, {
               headers: { Authorization: `Bearer ${airtableToken}` },
@@ -105,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const recordId = fetchData.records[0].id;
 
-            // Step 2: Reserve the record
+            // Step 2: Immediately set Reserved=true to lock the code
             await fetch(
               `https://api.airtable.com/v0/${baseId}/${tableName}/${recordId}`,
               {
@@ -120,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
               }
             );
 
-            // Step 4: Fetch the code from the reserved record
+            // Step 4: Retrieve the Game pass code from the locked record
             const codeRes = await fetch(
               `https://api.airtable.com/v0/${baseId}/${tableName}/${recordId}`,
               {
@@ -136,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("game-pass-code").textContent =
               gamePassCode;
 
-            // Step 6: Mark as Sold
+            // Step 6: Update record to Sold=true and log Buyer Email
             await fetch(
               `https://api.airtable.com/v0/${baseId}/${tableName}/${recordId}`,
               {
