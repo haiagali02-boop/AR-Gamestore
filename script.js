@@ -24,8 +24,61 @@ document.addEventListener("DOMContentLoaded", () => {
   const baseId = "appREveHzZZJ8qhgi";
   const tableName = "Products";
 
+  // Shared URL Params Helper
+  const urlParams = new URLSearchParams(window.location.search);
+  const productName = urlParams.get("product") || "Xbox Game Pass Premium";
+  const productPrice = urlParams.get("price") || "2.50";
+
+  // Page-Specific Logic
+  const path = window.location.pathname;
+
+  // 1. HOME PAGE LOGIC (index.html)
+  if (path.endsWith("index.html") || path === "/" || path.endsWith("/")) {
+    checkStock();
+  }
+
+  // 2. ORDER PAGE LOGIC (order.html)
+  if (path.includes("order.html")) {
+    const formName = document.getElementById("form-product-name");
+    const formPrice = document.getElementById("form-product-price");
+    const subject = document.getElementById("email-subject");
+    const redirect = document.getElementById("next-redirect");
+
+    if (formName) formName.value = productName;
+    if (formPrice) formPrice.value = productPrice;
+    if (subject) subject.value = `New Order: ${productName}`;
+    if (redirect) {
+      const currentVal = redirect.value;
+      redirect.value = `${currentVal}?product=${encodeURIComponent(
+        productName
+      )}&price=${productPrice}`;
+    }
+  }
+
+  // 3. SUCCESS PAGE LOGIC (success.html)
+  if (path.includes("success.html")) {
+    const displayTitle = document.getElementById("display-product-name");
+    const paymentLink = document.getElementById("payment-link");
+
+    if (displayTitle) displayTitle.textContent = productName;
+    if (paymentLink) {
+      paymentLink.href = `payment.html?product=${encodeURIComponent(
+        productName
+      )}&price=${productPrice}`;
+    }
+  }
+
+  // 4. PAYMENT PAGE LOGIC (payment.html)
+  if (path.includes("payment.html")) {
+    checkStock().then((hasStock) => {
+      if (hasStock) {
+        initPayPal(productName, productPrice);
+      }
+    });
+  }
+
   // Airtable Stock Check System
-  const checkStock = async () => {
+  async function checkStock() {
     const buyButtonContainer = document.getElementById("buy-button");
     const stockInfo = document.getElementById("stock-info");
     const homeStockCount = document.getElementById("home-stock-count");
@@ -71,13 +124,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Airtable Error:", error);
       if (stockInfo) stockInfo.textContent = "Error checking stock";
-      if (homeStockCount) homeStockCount.textContent = "";
       return false;
     }
-  };
+  }
 
   // Initialize PayPal Button System
-  const initPayPal = () => {
+  function initPayPal(name, price) {
     if (!document.getElementById("paypal-button-container")) return;
 
     paypal
@@ -93,9 +145,9 @@ document.addEventListener("DOMContentLoaded", () => {
             purchase_units: [
               {
                 amount: {
-                  value: "2.50",
+                  value: price,
                 },
-                description: "Xbox Game Pass Premium",
+                description: name,
               },
             ],
           });
@@ -107,11 +159,12 @@ document.addEventListener("DOMContentLoaded", () => {
           // UI State: Show Loading
           document.getElementById("buy-button").style.display = "none";
           document.getElementById("payment-instruction").style.display = "none";
-          document.getElementById("stock-info").style.display = "none";
+          const stockInfo = document.getElementById("stock-info");
+          if (stockInfo) stockInfo.style.display = "none";
           document.getElementById("loading-message").style.display = "block";
 
           try {
-            // Step 1: Find an available record (Sold=false AND Reserved=false)
+            // Step 1: Find an available record
             const fetchUrl = `https://api.airtable.com/v0/${baseId}/${tableName}?filterByFormula=AND(NOT({Sold}), NOT({Reserved}))&maxRecords=1`;
             const fetchRes = await fetch(fetchUrl, {
               headers: { Authorization: `Bearer ${airtableToken}` },
@@ -125,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const recordId = fetchData.records[0].id;
 
-            // Step 2: Immediately set Reserved=true to lock the code
+            // Step 2: Reserve the record
             await fetch(
               `https://api.airtable.com/v0/${baseId}/${tableName}/${recordId}`,
               {
@@ -140,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
               }
             );
 
-            // Step 4: Retrieve the Game pass code from the locked record
+            // Step 4: Fetch the code from the reserved record
             const codeRes = await fetch(
               `https://api.airtable.com/v0/${baseId}/${tableName}/${recordId}`,
               {
@@ -156,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("game-pass-code").textContent =
               gamePassCode;
 
-            // Step 6: Update record to Sold=true and log Buyer Email
+            // Step 6: Mark as Sold
             await fetch(
               `https://api.airtable.com/v0/${baseId}/${tableName}/${recordId}`,
               {
@@ -182,20 +235,6 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       })
       .render("#paypal-button-container");
-  };
-
-  // Run initial logic
-  if (
-    window.location.pathname.includes("payment.html") ||
-    window.location.pathname.endsWith("index.html") ||
-    window.location.pathname === "/" ||
-    window.location.pathname.endsWith("/")
-  ) {
-    checkStock().then((hasStock) => {
-      if (hasStock && window.location.pathname.includes("payment.html")) {
-        initPayPal();
-      }
-    });
   }
 });
 
