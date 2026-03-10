@@ -478,6 +478,55 @@ nav {
   color: var(--text-white);
 }
 
+/* Code Display Section */
+#code-display {
+  margin-top: 2rem;
+  padding: 2.5rem;
+  border: 2px dashed var(--primary-color);
+  border-radius: 12px;
+  background: rgba(16, 124, 16, 0.05);
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+#code-display h3 {
+  color: var(--text-white);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#game-pass-code {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 4px;
+  color: var(--primary-color);
+  background: #000;
+  padding: 1rem;
+  border-radius: 8px;
+  display: inline-block;
+  margin: 1rem 0;
+  box-shadow: 0 0 15px rgba(16, 124, 16, 0.2);
+}
+
+#loading-message {
+  text-align: center;
+  padding: 2rem;
+}
+
+#loading-message i {
+  font-size: 3rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+#loading-message p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
 /* Footer */
 footer {
   background-color: var(--bg-secondary);
