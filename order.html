@@ -3,120 +3,76 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AR Gamestore | Order</title>
+    <title>Complete Your Order | AR Gamestore</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- Font Awesome for icons -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
-    <!-- PayPal SDK (Placeholder - in real app, replace CLIENT_ID) -->
-    <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
   </head>
   <body>
-    <nav>
-      <div class="logo">AR Gamestore</div>
-      <div class="nav-links">
-        <a href="index.html">Home</a>
-        <a href="index.html#products">Store</a>
-        <a href="order.html">Order</a>
+    <header>
+      <div class="container">
+        <a href="index.html" class="logo">
+          <i class="fab fa-xbox"></i>
+          <span>AR</span> GAMESTORE
+        </a>
       </div>
-    </nav>
+    </header>
 
-    <div class="order-container animate-fade">
-      <div id="order-form-container">
-        <h2>Complete Your Information</h2>
-        <form
-          action="https://formsubmit.co/d4d77dbb32a266c7bef10c590cfb2911"
-          method="POST"
-          id="order-form"
-        >
-          <!-- FormSubmit Configuration -->
-          <input
-            type="hidden"
-            name="_next"
-            id="next-redirect"
-            value="https://USERNAME.github.io/AR-Gamestore/success.html"
-          />
-          <input type="hidden" name="_captcha" value="false" />
-          <input
-            type="hidden"
-            name="_subject"
-            id="email-subject"
-            value="New Order: Xbox Game Pass Premium"
-          />
-          <input type="hidden" name="_template" value="table" />
+    <main>
+      <div class="container">
+        <div class="form-container animate-fade">
+          <h2 class="form-title">Complete Your Order</h2>
+          <form
+            id="order-form"
+            action="https://formsubmit.co/d4d77dbb32a266c7bef10c590cfb2911"
+            method="POST"
+          >
+            <!-- Form Fields -->
+            <div class="form-group">
+              <label for="first_name">First Name</label>
+              <input type="text" id="first_name" name="first_name" required />
+            </div>
+            <div class="form-group">
+              <label for="last_name">Last Name</label>
+              <input type="text" id="last_name" name="last_name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone" required />
+            </div>
+          </form>
 
-          <!-- Dynamic Product Info -->
-          <input type="hidden" name="Product Name" id="form-product-name" />
-          <input type="hidden" name="Product Price" id="form-product-price" />
-
-          <div class="form-group">
-            <label for="first_name">First Name</label>
-            <input
-              type="text"
-              id="first_name"
-              name="first_name"
-              required
-              placeholder="Enter your first name"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="last_name">Last Name</label>
-            <input
-              type="text"
-              id="last_name"
-              name="last_name"
-              required
-              placeholder="Enter your last name"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              placeholder="Enter your email"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="phone">Phone Number</label>
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              required
-              placeholder="Enter your phone number"
-            />
-          </div>
-
-          <button type="submit" class="submit-btn">Proceed to Payment</button>
-        </form>
+          <!-- PayPal Button -->
+          <div id="paypal-button-container" style="margin-top: 30px"></div>
+        </div>
       </div>
-    </div>
+
+      <!-- Thank You Popup -->
+      <div id="thank-you-popup" class="popup-overlay" style="display: none">
+        <div class="popup-content">
+          <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+          </div>
+          <h2 class="success-title">Thank You!</h2>
+          <p class="success-text">
+            Your payment was successful. Your Game Pass code will be sent to
+            your email shortly.
+          </p>
+          <a href="index.html" class="buy-btn">Return to Home</a>
+        </div>
+      </div>
+    </main>
 
     <footer>
-      <div class="footer-content">
-        <h3>Follow us on Instagram</h3>
-        <p>Stay updated with our latest offers and gaming news!</p>
-        <a
-          href="https://instagram.com/ar_game.store"
-          class="instagram-btn"
-          target="_blank"
-        >
-          <i class="fab fa-instagram"></i> Follow ar_game.store
-        </a>
-        <p style="margin-top: 2rem; font-size: 0.9rem; color: #555">
-          &copy; 2024 AR Gamestore. All rights reserved.
+      <div class="container">
+        <p class="footer-text">
+          &copy; 2026 AR Gamestore. Secure digital delivery.
         </p>
       </div>
     </footer>
-
-    <script src="script.js"></script>
-  </body>
-</html>
