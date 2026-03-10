@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Gamestore | Secure Payment</title>
+    <title>AR Gamestore | Payment Successful</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -13,23 +13,15 @@
         <div class="nav-links">
             <a href="index.html">Home</a>
             <a href="index.html#products">Store</a>
-            <a href="order.html">Order</a>
         </div>
     </nav>
 
-    <div class="paypal-payment-container animate-fade">
-        <div class="paypal-card">
-            <h2>Secure Payment with PayPal</h2>
-            <p>Click the button below to complete your purchase for the Xbox Game Pass Premium code.</p>
-            
-            <!-- PayPal Hosted Button -->
-            <script src="https://www.paypal.com/sdk/js?client-id=BAAevmO7nXTRR6SUC-3YTlJZtkd6f0fJLVF3zvbDaQxPgEhIvEJ4ZmNZFwJ6zvUhmgKOuLVuHzTBQEUYKY&components=hosted-buttons&disable-funding=venmo&currency=USD"></script>
-            <div id="paypal-container-3BZQCHPZTRVJJ"></div>
-            <script>
-                paypal.HostedButtons({
-                    hostedButtonId: "3BZQCHPZTRVJJ",
-                }).render("#paypal-container-3BZQCHPZTRVJJ");
-            </script>
+    <div class="order-container animate-fade">
+        <div id="payment-success-overlay" style="display: block; text-align: center; padding: 2rem;">
+            <i class="fas fa-check-circle"></i>
+            <h2>Payment Successful!</h2>
+            <p>Thank you for your purchase. Your Game Pass code will be sent to your email shortly.</p>
+            <a href="index.html" class="buy-btn" style="margin-top: 2rem; display: inline-block; width: auto;">Return to Store</a>
         </div>
     </div>
 

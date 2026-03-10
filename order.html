@@ -25,13 +25,24 @@
 
     <div class="order-container animate-fade">
       <div id="order-form-container">
-        <h2>Complete Your Informations</h2>
+        <h2>Complete Your Information</h2>
         <form
-          id="order-form"
-          onsubmit="event.preventDefault(); proceedToPayment();"
-          method="post"
           action="https://formsubmit.co/d4d77dbb32a266c7bef10c590cfb2911"
+          method="POST"
         >
+          <!-- FormSubmit Configuration -->
+          <input
+            type="hidden"
+            name="_next"
+            value="https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPO_NAME/payment.html"
+          />
+          <input
+            type="hidden"
+            name="_subject"
+            value="New Order: Xbox Game Pass Premium"
+          />
+          <input type="hidden" name="_template" value="table" />
+
           <div class="form-group">
             <label for="first_name">First Name</label>
             <input
@@ -76,9 +87,7 @@
             />
           </div>
 
-          <button type="submit" class="submit-btn">
-            Proceed to Payment Selection
-          </button>
+          <button type="submit" class="submit-btn">Proceed to Payment</button>
         </form>
       </div>
     </div>
