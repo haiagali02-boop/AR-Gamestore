@@ -168,4 +168,15 @@ document.addEventListener('DOMContentLoaded', () => {
     el.style.opacity = '0';
     observer.observe(el);
   });
+
+  // Handle BaridiMob Buy Click
+  document.querySelectorAll('.baridi-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = btn.getAttribute('data-name');
+      const price = btn.getAttribute('data-price');
+      localStorage.setItem('product_name', name);
+      localStorage.setItem('product_price', price);
+      window.location.href = 'payment-baridimob.html';
+    });
+  });
 });
