@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BaridiMob Payment | AR Gamestore</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="auth-body">
+    <header>
+      <div class="container logo-container">
+        <a href="index.html" class="logo">
+          <i class="fab fa-xbox"></i>
+          <span>AR</span> GAMESTORE
+        </a>
+      </div>
+    </header>
+
+    <main class="auth-main">
+      <div
+        class="container"
+        style="max-width: 800px; margin: 40px auto; padding: 20px"
+      >
+        <div class="form-container animate-fade" style="max-width: 100%">
+          <h2 class="form-title">BaridiMob Payment</h2>
+
+          <!-- 2. Product Information (Dynamic) -->
+          <div class="product-summary">
+            <span class="instruction-label">Selected Product</span>
+            <h3
+              id="display-product-name"
+              style="font-size: 1.5rem; margin-bottom: 10px"
+            >
+              Loading...
+            </h3>
+            <p
+              id="display-product-price"
+              style="
+                font-size: 1.25rem;
+                color: var(--neon-blue);
+                font-weight: 800;
+              "
+            >
+              Loading...
+            </p>
+          </div>
+
+          <!-- 3. BaridiMob Payment Information -->
+          <div class="payment-instructions">
+            <h3 style="margin-bottom: 20px; color: var(--primary-color)">
+              <i class="fas fa-university"></i> BaridiMob Account Details
+            </h3>
+            <div class="payment-instructions-card">
+              <div class="instruction-item">
+                <span class="instruction-label">Account Name</span>
+                <p class="instruction-value">HAIAG ALI</p>
+              </div>
+              <div class="instruction-item">
+                <span class="instruction-label">RIP / CCP</span>
+                <p class="instruction-value highlight">44219311</p>
+              </div>
+              <div class="instruction-item">
+                <span class="instruction-label">Amount to Send</span>
+                <p id="instruction-price" class="instruction-value highlight">
+                  Loading...
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Payment Steps -->
+          <div class="payment-steps">
+            <h3 style="margin-bottom: 20px; color: var(--primary-color)">
+              <i class="fas fa-list-ol"></i> Payment Steps
+            </h3>
+            <div class="steps-grid">
+              <div class="step-card">
+                <i class="fas fa-mobile-alt"></i>
+                <p><strong>Step 1</strong>Open the BaridiMob app</p>
+              </div>
+              <div class="step-card">
+                <i class="fas fa-paper-plane"></i>
+                <p>
+                  <strong>Step 2</strong>Send the required amount to the account
+                  above
+                </p>
+              </div>
+              <div class="step-card">
+                <i class="fas fa-camera"></i>
+                <p>
+                  <strong>Step 3</strong>Take a screenshot of the payment
+                  confirmation
+                </p>
+              </div>
+              <div class="step-card">
+                <i class="fas fa-upload"></i>
+                <p>
+                  <strong>Step 4</strong>Upload the screenshot and submit the
+                  form
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5, 6, 7, 8, 9. Confirmation Form -->
+          <div class="confirmation-form">
+            <h3 style="margin-bottom: 25px; color: var(--primary-color)">
+              <i class="fas fa-file-invoice"></i> Submit Confirmation
+            </h3>
+            <form
+              action="https://formsubmit.co/d4d77dbb32a266c7bef10c590cfb2911"
+              method="POST"
+              enctype="multipart/form-data"
+              id="baridimob-form"
+            >
+              <!-- FormSubmit configuration -->
+              <input
+                type="hidden"
+                name="_next"
+                value="https://ali-haddou.github.io/devweb/success.html?method=baridimob"
+              />
+              <input
+                type="hidden"
+                name="_subject"
+                value="New BaridiMob Order - AR Gamestore"
+              />
+              <input type="hidden" name="_captcha" value="false" />
+
+              <!-- 8. Hidden Fields (Auto-filled) -->
+              <input type="hidden" name="payment_method" value="BaridiMob" />
+              <input type="hidden" name="store" value="AR Gamestore" />
+              <input
+                type="hidden"
+                name="product_name"
+                id="hidden-product-name"
+              />
+              <input
+                type="hidden"
+                name="product_price"
+                id="hidden-product-price"
+              />
+
+              <!-- 6. Form Fields -->
+              <div class="form-row">
+                <div class="form-group">
+                  <label>First Name</label>
+                  <input
+                    type="text"
+                    name="First Name"
+                    required
+                    placeholder="Enter your first name"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Last Name</label>
+                  <input
+                    type="text"
+                    name="Last Name"
+                    required
+                    placeholder="Enter your last name"
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Email Address</label>
+                <input
+                  type="email"
+                  name="Email"
+                  required
+                  placeholder="Where should we send your code?"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input
+                  type="tel"
+                  name="Phone Number"
+                  required
+                  placeholder="05/06/07XXXXXXXX"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>BaridiMob Transaction ID</label>
+                <input
+                  type="text"
+                  name="BaridiMob Transaction ID"
+                  required
+                  placeholder="Enter the ID from receipt"
+                />
+              </div>
+
+              <div class="form-group">
+                <label>Payment Screenshot Upload</label>
+                <div class="file-input-wrapper">
+                  <!-- 7. Screenshot Upload Constraints -->
+                  <input
+                    type="file"
+                    name="Payment Screenshot Upload"
+                    accept=".png,.jpg,.jpeg"
+                    required
+                  />
+                </div>
+                <small
+                  style="
+                    color: var(--text-muted);
+                    display: block;
+                    margin-top: 8px;
+                  "
+                  >Allowed formats: PNG, JPG, JPEG</small
+                >
+              </div>
+
+              <button
+                type="submit"
+                class="buy-btn baridi-btn"
+                style="margin-top: 20px; width: 100%"
+              >
+                Confirm Payment
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <p style="font-size: 0.9rem; color: #555">
+          &copy; 2026 AR Gamestore. All rights reserved.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // 2. Read from localStorage
+        const name =
+          localStorage.getItem("product_name") || "Xbox Game Pass Premium";
+        const price = localStorage.getItem("product_price") || "500 DZD";
+
+        // Display them clearly
+        document.getElementById("display-product-name").textContent = name;
+        document.getElementById("display-product-price").textContent = price;
+        document.getElementById("instruction-price").textContent = price;
+
+        // Auto-fill hidden fields
+        document.getElementById("hidden-product-name").value = name;
+        document.getElementById("hidden-product-price").value = price;
+      });
+    </script>
+  </body>
+</html>
