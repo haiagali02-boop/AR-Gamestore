@@ -66,12 +66,14 @@
             <i class="fas fa-check-circle"></i>
           </div>
           <h1 class="success-title">Order Received!</h1>
-          <p class="success-text">
+          <p id="success-message" class="success-text">
             Thank you! Your details have been securely recorded. You are now
             being redirected to the payment page to complete your purchase.
           </p>
-          <a href="payment.html" class="buy-btn">Go to Payment Now</a>
-          <p class="redirect-timer">
+          <a id="success-btn" href="payment.html" class="buy-btn"
+            >Go to Payment Now</a
+          >
+          <p id="redirect-info" class="redirect-timer">
             Redirecting in <span id="timer">5</span> seconds...
           </p>
         </div>
@@ -87,17 +89,31 @@
     </footer>
 
     <script>
-      let timeLeft = 5;
-      const timerElement = document.getElementById("timer");
+      const urlParams = new URLSearchParams(window.location.search);
+      const method = urlParams.get("method");
+      const messageElement = document.getElementById("success-message");
+      const btnElement = document.getElementById("success-btn");
+      const redirectInfo = document.getElementById("redirect-info");
 
-      const countdown = setInterval(() => {
-        timeLeft--;
-        timerElement.textContent = timeLeft;
-        if (timeLeft <= 0) {
-          clearInterval(countdown);
-          window.location.href = "payment.html";
-        }
-      }, 1000);
+      if (method === "baridimob") {
+        messageElement.textContent =
+          "After verifying your BaridiMob payment, your Game Pass code will be sent to your email.";
+        btnElement.textContent = "Return to Home";
+        btnElement.href = "index.html";
+        redirectInfo.style.display = "none";
+      } else {
+        let timeLeft = 5;
+        const timerElement = document.getElementById("timer");
+
+        const countdown = setInterval(() => {
+          timeLeft--;
+          timerElement.textContent = timeLeft;
+          if (timeLeft <= 0) {
+            clearInterval(countdown);
+            window.location.href = "payment.html";
+          }
+        }, 1000);
+      }
     </script>
     <script type="module" src="script.js"></script>
   </body>
