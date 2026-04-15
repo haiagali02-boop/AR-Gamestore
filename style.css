@@ -258,12 +258,14 @@ nav a:hover {
   margin-top: auto;
 }
 
-.baridi-btn {
+.baridi-btn,
+.add-to-cart-btn {
   background: linear-gradient(45deg, var(--neon-blue), var(--neon-blue-hover));
   box-shadow: var(--shadow-blue);
 }
 
-.baridi-btn:hover {
+.baridi-btn:hover,
+.add-to-cart-btn:hover {
   background: var(--neon-blue-hover);
   box-shadow: 0 0 30px rgba(0, 191, 255, 0.5);
 }
