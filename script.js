@@ -335,6 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (cartSnap.exists() && cartSnap.data().items.length > 0) {
         const items = cartSnap.data().items;
+        window.currentCartItems = items; // Store for form submission
         cartContainer.innerHTML = "";
 
         let totalUsd = 0;
@@ -371,6 +372,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         totalUsdElement.textContent = totalUsd.toFixed(2);
         totalDzdElement.textContent = totalDzd;
+
+        const baridiAmountElement = document.getElementById("baridi-amount");
+        if (baridiAmountElement) {
+          baridiAmountElement.textContent = `${totalDzd} DZD`;
+        }
 
         // Store totals for PayPal
         window.cartTotalUsd = totalUsd;
@@ -485,23 +491,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const baridiForm = document.getElementById("baridimob-cart-form");
   if (baridiForm) {
     baridiForm.addEventListener("submit", (e) => {
+      // Remove existing hidden fields if any (to avoid duplicates on multiple clicks)
+      baridiForm
+        .querySelectorAll('input[type="hidden"].auto-field')
+        .forEach((el) => el.remove());
+
       const cartInput = document.createElement("input");
       cartInput.type = "hidden";
-      cartInput.name = "cart_products";
-      cartInput.value = JSON.stringify(window.currentCartItems || []);
+      cartInput.className = "auto-field";
+      cartInput.name = "Cart Products";
+      cartInput.value = (window.currentCartItems || [])
+        .map((item) => `${item.product_name} (x${item.quantity})`)
+        .join(", ");
       baridiForm.appendChild(cartInput);
 
       const totalInput = document.createElement("input");
       totalInput.type = "hidden";
-      totalInput.name = "total_price_usd";
-      totalInput.value = window.cartTotalUsd || 0;
+      totalInput.className = "auto-field";
+      totalInput.name = "Total Price";
+      totalInput.value = `${window.cartTotalUsd || 0} USD / ${window.cartTotalDzd || 0} DZD`;
       baridiForm.appendChild(totalInput);
-
-      const totalDzdInput = document.createElement("input");
-      totalDzdInput.type = "hidden";
-      totalDzdInput.name = "total_price_dzd";
-      totalDzdInput.value = window.cartTotalDzd || 0;
-      baridiForm.appendChild(totalDzdInput);
     });
   }
 });
