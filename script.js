@@ -1,4 +1,4 @@
-// AR Gamestore - Firebase Auth & Website Logic
+// AR Gamestore - Firebase Auth, Cart & Website Logic
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
   getAuth, 
@@ -7,8 +7,20 @@ import {
   onAuthStateChanged, 
   signOut 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  getDoc, 
+  updateDoc, 
+  deleteDoc, 
+  collection,
+  getDocs,
+  query,
+  where 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 1. Firebase Configuration
+// Firebase Configuration
 const firebaseConfig = { 
   apiKey: "AIzaSyCqEHEeDfjr1MwqEU_eBLkYatc6sMwuaZU", 
   authDomain: "ar-game-store-web.firebaseapp.com", 
@@ -19,31 +31,36 @@ const firebaseConfig = {
   measurementId: "G-YP898N3C39" 
 }; 
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  // --- AUTH STATE LISTENER ---
+  // Auth State Listener
   onAuthStateChanged(auth, (user) => {
+    currentUser = user;
     const isLoginPage = window.location.pathname.includes('login.html');
+    const isCartPage = window.location.pathname.includes('cart.html');
     
     if (user) {
-      // User is logged in
       if (isLoginPage) {
-        window.location.href = 'index.html'; // Auto-redirect to home if already logged in
+        window.location.href = 'index.html';
       }
       setupUserUI(user);
+      if (isCartPage) {
+        loadCartItems();
+      }
     } else {
-      // User is logged out
-      if (!isLoginPage && !window.location.pathname.endsWith('/') && !window.location.pathname.endsWith('index.html')) {
-        // Optional: protect other pages
+      if (isCartPage) {
+        window.location.href = 'login.html';
       }
       setupGuestUI();
     }
   });
 
-  // --- LOGIN / SIGNUP PAGE LOGIC ---
+  // Login/Signup Logic
   const loginTab = document.getElementById('login-tab');
   const signupTab = document.getElementById('signup-tab');
   const loginFormContainer = document.getElementById('login-form-container');
@@ -52,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const spinner = document.getElementById('loading-spinner');
 
   if (loginTab) {
-    // Toggle between Login and Signup
     loginTab.addEventListener('click', () => {
       loginTab.classList.add('active');
       signupTab.classList.remove('active');
@@ -69,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
       errorMsg.style.display = 'none';
     });
 
-    // Handle Login
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('login-email').value;
@@ -86,7 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Handle Signup
     document.getElementById('signup-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('signup-email').value;
@@ -115,11 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- UI SETUP FUNCTIONS ---
   function setupUserUI(user) {
     const nav = document.querySelector('nav');
     if (nav) {
-      // Replace Login link with Logout
       const existingLogin = Array.from(nav.querySelectorAll('a')).find(a => a.textContent.includes('Login'));
       if (existingLogin) existingLogin.remove();
 
@@ -153,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- EXISTING STORE LOGIC (Scroll Animations) ---
+  // Scroll Animations
   const observerOptions = { threshold: 0.1 };
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -169,14 +181,244 @@ document.addEventListener('DOMContentLoaded', () => {
     observer.observe(el);
   });
 
-  // Handle BaridiMob Buy Click
-  document.querySelectorAll('.baridi-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+  // Add to Cart Logic
+  document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
       const name = btn.getAttribute('data-name');
-      const price = btn.getAttribute('data-price');
-      localStorage.setItem('product_name', name);
-      localStorage.setItem('product_price', price);
-      window.location.href = 'payment-baridimob.html';
+      const priceUsd = parseFloat(btn.getAttribute('data-price-usd'));
+      const priceDzd = parseInt(btn.getAttribute('data-price-dzd'));
+
+      try {
+        const cartRef = doc(db, 'carts', user.uid);
+        const cartSnap = await getDoc(cartRef);
+
+        if (cartSnap.exists()) {
+          const cartData = cartSnap.data();
+          const items = cartData.items || [];
+          const existingIndex = items.findIndex(item => item.product_name === name);
+
+          if (existingIndex > -1) {
+            items[existingIndex].quantity += 1;
+          } else {
+            items.push({
+              product_name: name,
+              price_usd: priceUsd,
+              price_dzd: priceDzd,
+              quantity: 1
+            });
+          }
+
+          await updateDoc(cartRef, { items });
+        } else {
+          await setDoc(cartRef, {
+            items: [{
+              product_name: name,
+              price_usd: priceUsd,
+              price_dzd: priceDzd,
+              quantity: 1
+            }]
+          });
+        }
+
+        showNotification(`"${name}" added to cart!`);
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        showNotification('Error adding to cart', 'error');
+      }
     });
   });
+
+  // Cart Page Functions
+  window.loadCartItems = async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const cartContainer = document.getElementById('cart-items-container');
+    const totalUsdElement = document.getElementById('total-usd');
+    const totalDzdElement = document.getElementById('total-dzd');
+    const paypalSection = document.getElementById('paypal-section');
+    const baridiSection = document.getElementById('baridi-section');
+
+    if (!cartContainer) return;
+
+    try {
+      const cartRef = doc(db, 'carts', user.uid);
+      const cartSnap = await getDoc(cartRef);
+
+      if (cartSnap.exists() && cartSnap.data().items.length > 0) {
+        const items = cartSnap.data().items;
+        cartContainer.innerHTML = '';
+
+        let totalUsd = 0;
+        let totalDzd = 0;
+
+        items.forEach((item, index) => {
+          const itemTotalUsd = item.price_usd * item.quantity;
+          const itemTotalDzd = item.price_dzd * item.quantity;
+          totalUsd += itemTotalUsd;
+          totalDzd += itemTotalDzd;
+
+          const itemHtml = `
+            <div class="cart-item" data-index="${index}">
+              <div class="cart-item-info">
+                <h3>${item.product_name}</h3>
+                <p class="cart-item-price">${item.price_usd} USD / ${item.price_dzd} DZD</p>
+              </div>
+              <div class="cart-item-quantity">
+                <button class="qty-btn qty-minus" data-index="${index}">-</button>
+                <span>${item.quantity}</span>
+                <button class="qty-btn qty-plus" data-index="${index}">+</button>
+              </div>
+              <div class="cart-item-total">
+                <p>${itemTotalUsd} USD</p>
+                <p class="text-muted">${itemTotalDzd} DZD</p>
+              </div>
+              <button class="cart-remove-btn" data-index="${index}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          `;
+          cartContainer.innerHTML += itemHtml;
+        });
+
+        totalUsdElement.textContent = totalUsd.toFixed(2);
+        totalDzdElement.textContent = totalDzd;
+
+        // Store totals for PayPal
+        window.cartTotalUsd = totalUsd;
+        window.cartTotalDzd = totalDzd;
+
+        // Show payment sections
+        if (paypalSection) paypalSection.style.display = 'block';
+        if (baridiSection) baridiSection.style.display = 'block';
+
+        // Attach cart item event listeners
+        attachCartEventListeners(items);
+
+        // Initialize PayPal if visible
+        if (typeof window.renderPayPalButton === 'function') {
+          window.renderPayPalButton();
+        }
+      } else {
+        cartContainer.innerHTML = '<p class="empty-cart">Your cart is empty</p>';
+        if (paypalSection) paypalSection.style.display = 'none';
+        if (baridiSection) baridiSection.style.display = 'none';
+        totalUsdElement.textContent = '0.00';
+        totalDzdElement.textContent = '0';
+      }
+    } catch (error) {
+      console.error('Error loading cart:', error);
+    }
+  };
+
+  window.attachCartEventListeners = (items) => {
+    document.querySelectorAll('.qty-plus').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const index = parseInt(btn.getAttribute('data-index'));
+        await updateCartQuantity(index, items[index].quantity + 1);
+      });
+    });
+
+    document.querySelectorAll('.qty-minus').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const index = parseInt(btn.getAttribute('data-index'));
+        if (items[index].quantity > 1) {
+          await updateCartQuantity(index, items[index].quantity - 1);
+        } else {
+          await removeFromCart(index);
+        }
+      });
+    });
+
+    document.querySelectorAll('.cart-remove-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const index = parseInt(btn.getAttribute('data-index'));
+        await removeFromCart(index);
+      });
+    });
+  };
+
+  window.updateCartQuantity = async (index, newQuantity) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      const cartRef = doc(db, 'carts', user.uid);
+      const cartSnap = await getDoc(cartRef);
+      
+      if (cartSnap.exists()) {
+        const items = cartSnap.data().items;
+        items[index].quantity = newQuantity;
+        await updateDoc(cartRef, { items });
+        loadCartItems();
+      }
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+    }
+  };
+
+  window.removeFromCart = async (index) => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      const cartRef = doc(db, 'carts', user.uid);
+      const cartSnap = await getDoc(cartRef);
+      
+      if (cartSnap.exists()) {
+        const items = cartSnap.data().items;
+        items.splice(index, 1);
+        await updateDoc(cartRef, { items });
+        loadCartItems();
+      }
+    } catch (error) {
+      console.error('Error removing item:', error);
+    }
+  };
+
+  window.showNotification = (message, type = 'success') => {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 300);
+    }, 2500);
+  };
+
+  // BaridiMob Form Handler
+  const baridiForm = document.getElementById('baridimob-cart-form');
+  if (baridiForm) {
+    baridiForm.addEventListener('submit', (e) => {
+      const cartInput = document.createElement('input');
+      cartInput.type = 'hidden';
+      cartInput.name = 'cart_products';
+      cartInput.value = JSON.stringify(window.currentCartItems || []);
+      baridiForm.appendChild(cartInput);
+
+      const totalInput = document.createElement('input');
+      totalInput.type = 'hidden';
+      totalInput.name = 'total_price_usd';
+      totalInput.value = window.cartTotalUsd || 0;
+      baridiForm.appendChild(totalInput);
+
+      const totalDzdInput = document.createElement('input');
+      totalDzdInput.type = 'hidden';
+      totalDzdInput.name = 'total_price_dzd';
+      totalDzdInput.value = window.cartTotalDzd || 0;
+      baridiForm.appendChild(totalDzdInput);
+    });
+  }
 });
